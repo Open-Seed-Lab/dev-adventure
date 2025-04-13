@@ -1,11 +1,13 @@
 # Dev Log
 
-## Step 1: Create Project Root - Sub Project
+## Backend
+
+### Step 1: Create Project Root - Sub Project
 
 1. `cd <Root Folder of Mono Repo>`
 2. `cd ./Course-Work/React/001/mern-crash-course`
 
-## Step 2: Initialise Backend
+### Step 2: Initialise Backend
 
 1. `npm init -y`
 2. `npm install express mongoose dotenv`
@@ -20,20 +22,20 @@
    1. add `"type": "module"` to use `import / export` syntax instead of `require` syntax
 7. `npm install nodemon -D`
 
-## Step 3: Create MongoDB
+### Step 3: Create MongoDB
 
 1. Use Free tier and create a cluster get the database credentials
 2. use `mongoose` to connect to mongodb
 3. Create `product.model.js` to create *productSchema* and *Product* Model
 
-## Step 4: Create an API in server.js to create Product
+### Step 4: Create an API in server.js to create Product
 
 1. create `.env` file to store secrets like database connection string with password and other sensitive data
 2. add `.env` file to `.gitignore`
 3. `app.use(express.json())` middleware to accept json in request body
 4. add endpoints to add, delete, and get products
 
-## Step 4a: Add Typescript and intellisense
+### Step 4a: Add Typescript and intellisense
 
 1. `npm install --save-dev typescript @types/node @types/express @types/mongoose nodemon`
 2. `npx tsc --init`
@@ -56,7 +58,7 @@
 4. Modify .js to .ts and add Typed Code
 5. reove `"type": "module"` from package.json
 
-### Explanation for TsConfig changes
+#### Explanation for TsConfig changes
 
 > [!IMPORTANT]
 >
@@ -117,3 +119,25 @@
 >
 > - Typescript usually ignores all in above array except dist.
 > - I have added `dist` to exclude the configured output directory specifically.
+
+## Frontend
+
+### Step 1: Create Project Root - Sub Project
+
+1. `cd <Root Folder of Mono Repo>`
+2. `cd ./Course-Work/React/001/mern-crash-course`
+3. `mkdir frontend`
+
+### Step 2: Create ViteApp
+
+1. `cd frontend; create vite@latest .`
+   1. Select React and Typescript
+
+### Step 3: Install required packages and build app
+
+2. Install ChakraUI v2
+   1. `npm i @chakra-ui/react@2 @emotion/react @emotion/styled framer-motion`
+3. For Navigation
+   1. `npm install react-router-dom` 
+4. For Icons
+   1. `npm install react-icons`
