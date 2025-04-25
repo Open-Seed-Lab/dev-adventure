@@ -6,7 +6,7 @@ Udemy [Course Link][1]:
 
 <br />
 
-- [ ] Mern Crash Course
+- [x] Mern Crash Course
 - [ ] Full Stack Realtime Chat App
 - [ ] Beginner Friendly Realtime Chat App
 - [ ] Spotify Clone
