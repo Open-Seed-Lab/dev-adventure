@@ -14,16 +14,19 @@ export const signup = async (
 	const { fullName, email, password } = req.body
 	try {
 		if ((fullName || '').length === 0 || (email || '').length === 0 || (password || '').length == 0) {
+			console.log('[mern-chat-app] backend - login - Missing Fields')
 			res.status(400).json({ success: false, message: 'Missing Fileds' })
 			return;
 		}
 		if ((password || '').length < 6) {
+			console.log('[mern-chat-app] backend - login - Password must be at least 6 characters')
 			res.status(400).json({ success: false, message: 'Password Must be at Least 6 characters' })
 			return;
 		}
 		const user = await User.findOne({ email })
 
 		if (user) {
+			console.log('[mern-chat-app] backend - login - Email Already Exists')
 			res.status(400).json({ success: false, message: 'Email Already Exists' })
 			return;
 		}
@@ -63,16 +66,19 @@ export const login = async (
 	const { email, password } = req.body
 	try {
 		if ((email || '').length == 0) {
+			console.log('[mern-chat-app] backend - login-  Email is Empty')
 			res.status(400).json({ success: false, message: 'Email is empty' });
 			return;
 		}
 		if ((password || '').length < 6) {
+			console.log('[mern-chat-app] backend - login - Password Must Be at least 6 characters')
 			res.status(400).json({ success: false, message: 'Password must be at least 6 characters' })
 			return;
 		}
 		const user = await User.findOne({ email })
 
 		if (!user || !(await compare(password, user.password))) {
+			console.log('[mern-chat-app] backend - login - Invalid Credentials')
 			res.status(400).json({ success: false, message: 'Invalid Credentials' })
 			return;
 		}
@@ -81,6 +87,7 @@ export const login = async (
 
 		const { password: _pwd, ...dataToSend } = user;
 
+		console.log('[mern-chat-app] backend - login - User', JSON.stringify(user, null, 2))
 		res.status(200).json({ success: true, data: dataToSend })
 
 	} catch (error) {

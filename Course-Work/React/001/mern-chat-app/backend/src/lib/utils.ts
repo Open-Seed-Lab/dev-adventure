@@ -27,9 +27,9 @@ export const handleErrorGeneric = (
 	res: Response<ApiResponse, Record<string, any>>
 ) => {
 	if (error instanceof Error) {
-		console.error(`[mern-crash-course] Error ${logPrefix}: `, error.message);
+		console.error(`[mern-chat-app] Error ${logPrefix}: `, error.message);
 	} else {
-		console.error(`[mern-crash-course] An unknown Error ${logPrefix}: `, error);
+		console.error(`[mern-chat-app] An unknown Error ${logPrefix}: `, error);
 	}
 	res.status(500).json({ success: false, message: "Internal Server Error" });
 }
