@@ -60,5 +60,15 @@ Root
 
 ## Front End Structure
 
-1. `cd frontend`
-2. ...
+- `cd frontend`
+- `npm create vite@latest .` - React and Typescript
+- `npm install --save react-router-dom react-hot-toast`
+- install tailwind css
+
+  ```console
+  npm install -D tailwindcss@3 postcss autoprefixer
+  npx tailwindcss init -p
+  ```
+- follow through tailwindcss@3 documentaiton for few more steps
+- `npm i -D daisyui@latest`
+
