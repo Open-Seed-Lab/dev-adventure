@@ -85,9 +85,10 @@ export const login = async (
 
 		generateJWTToken(user._id, res);
 
-		const { password: _pwd, ...dataToSend } = user;
+		const { password: _pwd, ...dataToSend } = user.toJSON();
 
-		console.log('[mern-chat-app] backend - login - User', JSON.stringify(user, null, 2))
+		console.log('[mern-chat-app] backend - login - User', JSON.stringify(dataToSend, null, 2))
+
 		res.status(200).json({ success: true, data: dataToSend })
 
 	} catch (error) {

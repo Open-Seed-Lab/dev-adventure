@@ -3,6 +3,9 @@ import { axiosInstance } from '../lib/axios';
 import { handleErrorGeneric } from '../lib/utils';
 import { ILoginForm, ISignupForm, IProfileForm } from '../models/signupform.model';
 import toast from 'react-hot-toast';
+import { io, Socket } from "socket.io-client";
+
+const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:3001" : "/";
 
 interface AuthState {
 	authUser: any | null,
@@ -10,12 +13,17 @@ interface AuthState {
 	isSigningUp: boolean,
 	isLoggingIn: boolean,
 	isUpdatingProfile: boolean,
+	onlineUsers: string[],
+	socket: Socket | null,
 
 	checkAuth: () => Promise<void>
 	signUp: (data: ISignupForm) => Promise<void>
 	logout: () => Promise<void>
 	login: (data: ILoginForm) => Promise<void>
 	uploadProfilePic: (data: IProfileForm) => Promise<void>
+	connectSocket: () => void | any,
+
+	disconnectSocket: () => void | any
 }
 
 export interface ApiResponse<T = any> {
@@ -24,24 +32,27 @@ export interface ApiResponse<T = any> {
 	message?: string;
 }
 
-export const useAuthStore = create<AuthState>(set => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
 	authUser: null,
 	isCheckingAuth: true,
 	isSigningUp: false,
 	isLoggingIn: false,
 	isUpdatingProfile: false,
+	onlineUsers: [],
+	socket: null,
 	checkAuth: async () => {
 		axiosInstance.post('auth/check').then(res => {
 			const apires = res.data as ApiResponse<any>
 			if (!apires) {
 				throw new Error(`Improper Response`)
 			}
-			const { success, data: userData } = apires;
+			const { success, data: userData, message: errorMessage } = apires;
 			if (!success || !userData) {
-				//throw new Error(apires.message || 'Improper Response`)')
 				set({ authUser: null })
+			} else {
+				set({ authUser: userData })
 			}
-			set({ authUser: userData })
+			get().connectSocket();
 		}).catch(error => {
 			handleErrorGeneric('checkAuth', error);
 			set({ authUser: null })
@@ -57,9 +68,9 @@ export const useAuthStore = create<AuthState>(set => ({
 			if (!authUser) {
 				throw new Error('Authorised User Data is empty');
 			}
-			console.log(`[mern-chat-app] signup response: ${JSON.stringify(authUser, null, 2)}`)
 			set({ authUser })
 			toast.success('Account created Successfully');
+			get().connectSocket();
 		} catch (error) {
 			handleErrorGeneric('Signup', error, true)
 		} finally {
@@ -71,6 +82,7 @@ export const useAuthStore = create<AuthState>(set => ({
 			await axiosInstance.post('/auth/logout');
 			set({ authUser: null })
 			toast.success('User Logged Out Successfully');
+			get().disconnectSocket();
 		} catch (error) {
 			handleErrorGeneric('Logout', error, true)
 		}
@@ -78,26 +90,43 @@ export const useAuthStore = create<AuthState>(set => ({
 	login: async (data: ILoginForm) => {
 		set({ isLoggingIn: true })
 		try {
-			const res = await axiosInstance.post('/auth/login', data);
-			console.log(`[mern-chat-app] - frontend - login response: `, JSON.stringify(res))
-			const authUser = res.data;
+			const apiRes = await axiosInstance.post('/auth/login', data);
+			const apires = apiRes.data as ApiResponse<any>
+			if (!apires) {
+				throw new Error(`Improper Response`)
+			}
+			const { success, data: authUser, message: errorResponse } = apires;
+			if (!success) {
+				throw new Error(errorResponse);
+			}
 			if (!authUser) {
 				throw new Error('Authorised User Data is empty');
 			}
-			console.log(`[mern-chat-app] login response authUser: ${JSON.stringify(authUser, null, 2)}`)
 			set({ authUser })
 			toast.success('LoggedIn Successfully');
+			get().connectSocket()
 		} catch (error) {
 			handleErrorGeneric('Login', error, true)
 		} finally {
 			set({ isLoggingIn: false })
 		}
+
 	},
 	uploadProfilePic: async (data: IProfileForm) => {
 		set({ isUpdatingProfile: true })
 		try {
-			const res = await axiosInstance.post('/auth/update-profile', data)
-			console.log(`[mern-chat-app] upload profile Pic response : ${JSON.stringify(res, null, 2)}`)
+			const apiRes = await axiosInstance.post('/auth/update-profile', data)
+
+			const apires = apiRes.data as ApiResponse<any>
+			if (!apires) {
+				throw new Error(`Improper Response`)
+			}
+			const { success, data: res, message: errorResponse } = apires;
+
+			if (!success) {
+				throw new Error(errorResponse);
+			}
+
 			if (!res.data) throw new Error("Unhandled Error")
 			if (!res.data.success) throw new Error(`Error Uploading Profile Picture`)
 			set({ authUser: res.data.data })
@@ -107,5 +136,30 @@ export const useAuthStore = create<AuthState>(set => ({
 		} finally {
 			set({ isUpdatingProfile: false })
 		}
-	}
+	},
+
+	connectSocket: () => {
+		const { authUser } = get();
+		if (!authUser || get().socket?.connected) return;
+
+		const socket = io(BASE_URL, {
+			query: {
+				userId: authUser._id,
+			},
+		});
+		socket.connect();
+
+		set({ socket: socket });
+
+		socket.on("getOnlineUsers", (userIds) => {
+			set({ onlineUsers: userIds });
+		});
+	},
+
+	disconnectSocket: () => {
+		const { socket } = get();
+		if (socket?.connected) {
+			socket.disconnect();
+		}
+	},
 }));

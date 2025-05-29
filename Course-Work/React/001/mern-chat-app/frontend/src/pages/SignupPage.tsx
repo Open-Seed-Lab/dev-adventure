@@ -37,13 +37,7 @@ function SignupPage() {
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		(e) => {
 			e.preventDefault();
-			console.log(
-				`[mern-chat-app] SignUp Submit: ${JSON.stringify(formData, null, 2)}`
-			);
 			const success = validateForm();
-			console.log(
-				`[mern-chat-app] SignUp validation: ${success ? "success" : "failed"}`
-			);
 			if (success) {
 				signUp(formData);
 			}

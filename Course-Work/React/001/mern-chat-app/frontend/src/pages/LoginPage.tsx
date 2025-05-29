@@ -33,13 +33,7 @@ function LoginPage() {
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		(e) => {
 			e.preventDefault();
-			console.log(
-				`[mern-chat-app] Login Submit: ${JSON.stringify(formData, null, 2)}`
-			);
 			const success = validateForm();
-			console.log(
-				`[mern-chat-app] Login validation: ${success ? "success" : "failed"}`
-			);
 			if (success) {
 				login(formData);
 			}

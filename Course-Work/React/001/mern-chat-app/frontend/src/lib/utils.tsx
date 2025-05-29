@@ -17,3 +17,11 @@ export const handleErrorGeneric = (
 		toast.error(errorMessage)
 	}
 }
+
+export const formatMessageTime = (value: number | string | Date): string => {
+	return new Date(value).toLocaleTimeString("en-US", {
+		hour: "2-digit",
+		minute: "2-digit",
+		hour12: false,
+	});
+}

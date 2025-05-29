@@ -1,13 +1,13 @@
 
-import { Request, Response } from "express"
+import { Response } from "express"
 import { ApiResponse } from '../models/ApiResponse';
 import User, { IUser } from "../models/user.model";
 import Message, { IMessage } from "../models/message.model";
-import { genSaltSync, hash, compare } from 'bcryptjs';
-import { generateJWTToken, handleErrorGeneric } from "../lib/utils";
+import { handleErrorGeneric } from "../lib/utils";
 import { AuthenticatedRequest } from "../models/AuthenticatedRequest";
 import cdnry from "../lib/cloudinary";
 import { IMongooseDocumentModel } from "../models/custommongoose.model";
+import { getUserSocketId, io } from "../lib/socket";
 
 export const getUsersForSidebar = async (
 	req: AuthenticatedRequest,
@@ -72,7 +72,10 @@ export const sendMessage = async (
 			senderId, receiverId, image: imageUrl, text
 		})
 		await newMessage.save()
-		// TODO: real time functionality with socket.io
+		const receiverSocketid = getUserSocketId(receiverId)
+		if (receiverSocketid?.length > 0) {
+			io.to(receiverSocketid).emit('newMessage', newMessage);
+		}
 		res.status(201).json({ success: true, data: newMessage, })
 	} catch (error) {
 		handleErrorGeneric('Check Auth', error, res)
