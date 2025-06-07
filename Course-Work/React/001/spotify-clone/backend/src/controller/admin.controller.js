@@ -12,11 +12,11 @@ const uploadToCloudinary = async (file) => {
 	}
 }
 
-export const createSong = async (req, resp, next) => {
+export const createSong = async (req, res, next) => {
 	console.log(`[spotify-clone] [backend] - admin - createSong: `)
 	try {
 		if (!req.files || !req.files.audioFile || !req.files.imageFile) {
-			resp.send(400).json({ success: false, message: "please upload all files" })
+			res.send(400).json({ success: false, message: "please upload all files" })
 		}
 		const {
 			title, artist, albumId = null, duration,
@@ -42,7 +42,7 @@ export const createSong = async (req, resp, next) => {
 				$push: { songs: song._id }
 			});
 		}
-		resp.status(201).json({ success: true, data: song })
+		res.status(201).json({ success: true, data: song })
 		return;
 	} catch (error) {
 		handleErrorGeneric('admin controller create song', error)

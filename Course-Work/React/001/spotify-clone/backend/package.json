@@ -4,7 +4,9 @@
   "main": "src/index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "serve": "node src/index.js"
+    "serve": "node src/index.js",
+	"seed:albums": "node src/seeds/albums.js",
+	"seed:songs": "node src/seeds/songs.js"
   },
   "keywords": [],
   "type": "module",

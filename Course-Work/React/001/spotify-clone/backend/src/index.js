@@ -13,18 +13,26 @@ import { connectDB } from "./lib/db.js";
 import fileUpload from "express-fileupload";
 
 import path from 'path'
+import cors from 'cors'
 
 dotenv.config();
 
+const __dirname = path.resolve()
 const app = express();
 const PORT = process.env.PORT;
+const ClientPORT = process.env.ClientPORT;
 const isDev = process.env.NODE_ENV === 'development';
-const __dirname = path.resolve()
 
+app.use(cors({
+	origin: `http://localhost:${ClientPORT}`,
+	credentials: true
+}))
 app.use(express.json()) // to parse req.body
 
 // Pass no parameters
-app.use(clerkMiddleware()) /* This adds auth to req obj => req.user */
+app.use(clerkMiddleware({
+	debug: true
+})) /* This adds auth to req obj => req.user */
 app.use(fileUpload({
 	useTempFiles: true,
 	tempFileDir: path.join(__dirname, "tmp"),

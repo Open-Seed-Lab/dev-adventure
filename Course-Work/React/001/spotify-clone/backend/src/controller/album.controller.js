@@ -16,11 +16,11 @@ export const getAlbumById = async (req, resp) => {
 	console.log(`[spotify-clone] [backend] - get album by Id: `);
 	const { albumId } = req.params;
 	try {
-		const album = await Album.findById(albumId);
+		const album = await Album.findById(albumId).populate("songs");
 		if (!album) {
 			return resp.status(404).json({ success: false, message: 'Album Not Found' })
 		}
-		return resp.status(200).json({ success: true, data: album }).populate(songs)
+		return resp.status(200).json({ success: true, data: album })
 	} catch (error) {
 		handleErrorGeneric(`Album Controller : Get Album by Id : ${albumId} :`, error);
 		next(error)

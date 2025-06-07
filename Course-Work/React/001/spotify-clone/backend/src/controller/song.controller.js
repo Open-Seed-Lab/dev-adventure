@@ -1,10 +1,11 @@
+import { handleErrorGeneric } from '../lib/utils.js'
 import { Song } from '../models/song.model.js'
 
-export const getAllSongs = async (req, resp, next) => {
+export const getAllSongs = async (req, res, next) => {
 	console.log(`[spotify-clone] [backend] - Get All Songs: `)
 	try {
-		const songs = await Song.find()
-		return resp.status(200).json({ success: true, data: songs })
+		const songs = await Song.find().sort({ createdAt: -1 });
+		return res.status(200).json({ success: true, data: songs })
 	} catch (error) {
 		handleErrorGeneric('Songs Controller : Get all Songs :', error);
 		next(error)
@@ -12,19 +13,20 @@ export const getAllSongs = async (req, resp, next) => {
 }
 
 
-export const getSongById = async (req, resp, next) => {
-	console.log(`[spotify-clone] [backend] - Get Song by Id: `)
-	const { songId } = req.params
-	try {
-		const songs = await Song.findById(songId)
-		return resp.status(200).json({ success: true, data: songs })
-	} catch (error) {
-		handleErrorGeneric('Songs Controller : Get all Songs :', error);
-		next(error)
-	}
-}
+// export const getSongById = async (req, resp, next) => {
+// 	console.log(`[spotify-clone] [backend] - Get Song by Id: `)
+// 	const { songId } = req.params
+// 	try {
+// 		const songs = await Song.findById(songId)
+// 		console.log(songs)
+// 		return resp.status(200).json({ success: true, data: songs })
+// 	} catch (error) {
+// 		handleErrorGeneric('Songs Controller : getSongById :', error);
+// 		next(error)
+// 	}
+// }
 
-export const getFeaturedSongs = async (req, resp, next) => {
+export const getFeaturedSongs = async (req, res, next) => {
 	console.log(`[spotify-clone] [backend] - Get Featured Songs: `)
 	try {
 		const songs = await Song.aggregate([
@@ -41,12 +43,12 @@ export const getFeaturedSongs = async (req, resp, next) => {
 		])
 		return res.status(200).json({ success: true, data: songs })
 	} catch (error) {
-		handleErrorGeneric('Songs Controller : Get Favourite Songs :', error);
+		handleErrorGeneric('Songs Controller : getFeaturedSongs :', error);
 		next(error)
 	}
 }
 
-export const getMadeForYou = async (req, resp, next) => {
+export const getMadeForYou = async (req, res, next) => {
 	console.log(`[spotify-clone] [backend] - Get Made For You Songs: `)
 	try {
 		const songs = await Song.aggregate([
@@ -61,14 +63,14 @@ export const getMadeForYou = async (req, resp, next) => {
 				}
 			}
 		])
-		return resp.status(200).json({ success: true, data: songs })
+		return res.status(200).json({ success: true, data: songs })
 	} catch (error) {
 		handleErrorGeneric('Songs Controller : Get Made For You Songs :', error);
 		next(error)
 	}
 }
 
-export const getTrending = async (req, resp, next) => {
+export const getTrending = async (req, res, next) => {
 	console.log(`[spotify-clone] [backend] - Get Trending Songs: `)
 	try {
 		const songs = await Song.aggregate([
@@ -83,7 +85,7 @@ export const getTrending = async (req, resp, next) => {
 				}
 			}
 		])
-		return resp.status(200).json({ success: true, data: songs })
+		return res.status(200).json({ success: true, data: songs })
 	} catch (error) {
 		handleErrorGeneric('Songs Controller : Get Trending Songs :', error);
 		next(error)

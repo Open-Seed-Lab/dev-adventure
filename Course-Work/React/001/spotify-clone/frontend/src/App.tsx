@@ -1,22 +1,25 @@
-import { Button } from './components/ui/button'
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage'
+import ChatPage from './pages/ChatPage'
+import AuthCallbackPage from './pages/AuthCallbackPage'
+import { AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
+import MainLayout from './layout/MainLayout';
+import AlbumPage from './pages/AlbumPage';
 
 function App() {
 	return (
 		<>
-			<header>
-				<SignedOut>
-					<SignInButton>
-						<Button>Sign In</Button>
-					</SignInButton>
-				</SignedOut>
-				<SignedIn>
-					<UserButton />
-				</SignedIn>
-			</header>
-			<h1 className="text-red-400 text-5xl">Hello</h1>
-			<h2 className="">Welcome!</h2>
-			<Button variant={"secondary"}> This is a button</Button>
+			<Routes>
+				<Route path='/sso-callback' element={<AuthenticateWithRedirectCallback
+					signUpForceRedirectUrl='/auth-callback'
+				/>} />
+				<Route path='/auth-callback' element={<AuthCallbackPage />} />
+				<Route element={<MainLayout />}>
+					<Route path='/' element={<HomePage />} />
+					<Route path='/chat' element={<ChatPage />} />
+					<Route path='/albums/:albumId' element={<AlbumPage />} />
+				</Route>
+			</Routes>
 		</>
 	)
 }
